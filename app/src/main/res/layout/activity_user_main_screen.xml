@@ -8,6 +8,7 @@
     tools:context=".UserMainScreen">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/headerCard"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginTop="-3dp"
@@ -44,5 +45,80 @@
             android:foreground="?attr/selectableItemBackground"/>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:id="@+id/addDataLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-5dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerCard">
+
+        <EditText
+            android:id="@+id/dataDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:backgroundTint="@color/black"
+            android:hint="Enter description"
+            android:textColor="@color/black"
+            android:textColorHint="#8C8484"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/dataAmount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:backgroundTint="@color/black"
+            android:ems="7"
+            android:hint="Amount"
+            android:textColor="@color/black"
+            android:textColorHint="#8C8484"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/violet"
+            android:foreground="?attr/selectableItemBackground"
+            android:text="ADD"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/addDataButton"
+        style="@style/UserName"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="-6dp"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/purple_700"
+        app:layout_constraintTop_toBottomOf="@id/headerCard"
+        app:strokeColor="@color/white"
+        app:strokeWidth="1dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Add data"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
+    </com.google.android.material.card.MaterialCardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
