@@ -97,7 +97,7 @@
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/addDataButton"
+        android:id="@+id/addDataCardView"
         style="@style/UserName"
         android:layout_width="match_parent"
         android:layout_height="30dp"
