@@ -1,10 +1,12 @@
 package com.project.expensestracker;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -25,6 +27,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class UserMainScreen extends AppCompatActivity {
 
     TextView userNameTV;
@@ -34,7 +39,8 @@ public class UserMainScreen extends AppCompatActivity {
     Button addDataButton;
     LinearLayout addDataLayout;
 
-    private String desc, amt;
+    private String desc, date;
+    private int amt;
 
     private FirebaseFirestore db;
 
@@ -79,22 +85,34 @@ public class UserMainScreen extends AppCompatActivity {
         });
 
         addDataButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
 
                 desc = dataDesc.getText().toString();
-                amt = dataAmt.getText().toString();
+                try {
+                    amt = Integer.parseInt(dataAmt.getText().toString());
 
-                if (TextUtils.isEmpty(desc) && TextUtils.isEmpty(amt)) {
+
+                if (TextUtils.isEmpty(desc) && TextUtils.isEmpty(String.valueOf(amt))) {
                     Toast.makeText(UserMainScreen.this, "Enter data properly!", Toast.LENGTH_SHORT).show();
                 } else {
                     addDataLayout.setVisibility(View.INVISIBLE);
                     addDataCard.setVisibility(View.VISIBLE);
 
-                    addDataToFireStore(desc, amt);
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+                    LocalDateTime now = LocalDateTime.now();
+                    date = dtf.format(now);
+
+                    addDataToFireStore(desc, date, amt);
 
                     dataDesc.setText("");
                     dataAmt.setText("");
+                }
+
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    Toast.makeText(UserMainScreen.this, "Enter valid amount!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -102,16 +120,21 @@ public class UserMainScreen extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
     }
 
-    private void addDataToFireStore(String desc, String amt) {
+    private void addDataToFireStore(String desc, String date, int amt) {
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
         //CollectionReference dbData = db.collection("User");
 
-        ModelClass model = new ModelClass(desc, amt);
+        ModelClass model = new ModelClass(desc, date, amt);
 
         FirebaseFirestore.getInstance().collection("User").document(signInAccount.getEmail()).collection("Expenses").document(desc).set(model).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(UserMainScreen.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
             }
         });
 
