@@ -1,21 +1,29 @@
 package com.project.expensestracker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class UserMainScreen extends AppCompatActivity {
 
@@ -25,6 +33,10 @@ public class UserMainScreen extends AppCompatActivity {
     EditText dataDesc, dataAmt;
     Button addDataButton;
     LinearLayout addDataLayout;
+
+    private String desc, amt;
+
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +81,54 @@ public class UserMainScreen extends AppCompatActivity {
         addDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addDataLayout.setVisibility(View.INVISIBLE);
-                addDataCard.setVisibility(View.VISIBLE);
+
+                desc = dataDesc.getText().toString();
+                amt = dataAmt.getText().toString();
+
+                if (TextUtils.isEmpty(desc) && TextUtils.isEmpty(amt)) {
+                    Toast.makeText(UserMainScreen.this, "Enter data properly!", Toast.LENGTH_SHORT).show();
+                } else {
+                    addDataLayout.setVisibility(View.INVISIBLE);
+                    addDataCard.setVisibility(View.VISIBLE);
+
+                    addDataToFireStore(desc, amt);
+                }
             }
         });
+
+        db = FirebaseFirestore.getInstance();
+    }
+
+    private void addDataToFireStore(String desc, String amt) {
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
+        //CollectionReference dbData = db.collection("User");
+
+        ModelClass model = new ModelClass(desc, amt);
+
+        FirebaseFirestore.getInstance().collection("User").document(signInAccount.getEmail()).collection("Description").document(desc).set(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        FirebaseFirestore.getInstance().collection("User").document(signInAccount.getEmail()).collection("Amount").document(amt).set(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /*dbData.add(model).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(UserMainScreen.this, "Failed to add data", Toast.LENGTH_SHORT).show();
+            }
+        });*/
     }
 }
