@@ -7,22 +7,25 @@
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
         android:layout_margin="8dp"
         app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="20dp"
         app:cardElevation="4dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/linearLayout2"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/single_data"
@@ -30,6 +33,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
+                    android:ems="10"
                     android:gravity="start|center_vertical"
                     android:text="Data Description"
                     android:textColor="@color/black"
@@ -49,18 +53,48 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/single_amount"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="3"
-                android:gravity="center"
-                android:text="Amount"
-                android:textColor="@color/green"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/single_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    android:text="Amount"
+                    android:textColor="@color/green"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="4dp">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_delete" />
+
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

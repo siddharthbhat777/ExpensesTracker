@@ -64,6 +64,7 @@
             android:layout_weight="4"
             android:backgroundTint="@color/black"
             android:hint="Enter description"
+            android:inputType="textMultiLine"
             android:textColor="@color/black"
             android:textColorHint="#8C8484"
             android:textSize="20sp"
@@ -124,12 +125,11 @@
         android:id="@+id/dataListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerCard" />
+        app:layout_constraintTop_toBottomOf="@+id/addDataLayout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

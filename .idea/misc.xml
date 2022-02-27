@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android Apps By Me/ExpensesTracker/app/src/main/res/drawable/ic_delete.xml" value="0.203" />
         <entry key="..\:/Android Apps By Me/ExpensesTracker/app/src/main/res/drawable/ic_logout.xml" value="0.1875" />
         <entry key="..\:/Android Apps By Me/ExpensesTracker/app/src/main/res/layout/activity_main.xml" value="0.27447916666666666" />
         <entry key="..\:/Android Apps By Me/ExpensesTracker/app/src/main/res/layout/activity_user_main_screen.xml" value="0.264" />
