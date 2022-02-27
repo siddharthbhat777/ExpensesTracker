@@ -1,8 +1,8 @@
 package com.project.expensestracker;
 
 public class ModelClass {
-    String desc, dAndT;
-    long amt;
+    private String desc, dAndT;
+    private long amt;
 
     ModelClass(){}
 

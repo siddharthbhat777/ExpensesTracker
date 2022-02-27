@@ -1,14 +1,18 @@
 package com.project.expensestracker;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,11 +28,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserMainScreen extends AppCompatActivity {
 
@@ -43,6 +55,10 @@ public class UserMainScreen extends AppCompatActivity {
     private int amt;
 
     private FirebaseFirestore db;
+
+    RecyclerView recyclerView;
+    ArrayList<ModelClass> model;
+    DataAdapter dataAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +133,32 @@ public class UserMainScreen extends AppCompatActivity {
             }
         });
 
+        recyclerView = findViewById(R.id.dataListRecyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        model = new ArrayList<ModelClass>();
+        dataAdapter = new DataAdapter(UserMainScreen.this, model);
+
+        eventChangeListener();
+        recyclerView.setAdapter(dataAdapter);
+    }
+
+    private void eventChangeListener() {
         db = FirebaseFirestore.getInstance();
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
+        db.collection("User").document(signInAccount.getEmail()).collection("Expenses").orderBy("dAndT", Query.Direction.DESCENDING).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                        for (DocumentSnapshot documentSnapshot : list) {
+                            ModelClass modelClassObj = documentSnapshot.toObject(ModelClass.class);
+                            model.add(modelClassObj);
+                        }
+                        dataAdapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     private void addDataToFireStore(String desc, String date, int amt) {
@@ -126,7 +167,7 @@ public class UserMainScreen extends AppCompatActivity {
 
         ModelClass model = new ModelClass(desc, date, amt);
 
-        FirebaseFirestore.getInstance().collection("User").document(signInAccount.getEmail()).collection("Expenses").document(desc).set(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("User").document(signInAccount.getEmail()).collection("Expenses").document(desc).set(model).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
