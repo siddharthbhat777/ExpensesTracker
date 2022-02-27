@@ -92,6 +92,9 @@ public class UserMainScreen extends AppCompatActivity {
                     addDataCard.setVisibility(View.VISIBLE);
 
                     addDataToFireStore(desc, amt);
+
+                    dataDesc.setText("");
+                    dataAmt.setText("");
                 }
             }
         });
