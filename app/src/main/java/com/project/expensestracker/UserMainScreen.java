@@ -3,12 +3,16 @@ package com.project.expensestracker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,6 +27,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
@@ -48,6 +54,8 @@ public class UserMainScreen extends AppCompatActivity {
     ImageView logoutButton;
     MaterialCardView addDataCard;
     EditText dataDesc, dataAmt;
+    private GoogleSignInClient mGoogleSignInClient;
+
     Button addDataButton;
     LinearLayout addDataLayout;
 
@@ -57,7 +65,7 @@ public class UserMainScreen extends AppCompatActivity {
     private FirebaseFirestore db;
 
     RecyclerView recyclerView;
-    ArrayList<ModelClass> model;
+    ArrayList<ModelClass> list;
     DataAdapter dataAdapter;
 
     @Override
@@ -76,16 +84,23 @@ public class UserMainScreen extends AppCompatActivity {
         addDataLayout = findViewById(R.id.addDataLayout);
 
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
-        if(signInAccount != null){
+        if (signInAccount != null) {
             userNameTV.setText("Welcome, " + signInAccount.getDisplayName());
+            GoogleSignInOptions gso = new GoogleSignInOptions
+                    .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+            mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         }
 
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                startActivity(intent);
+                CustomDialog customDialog = new CustomDialog(UserMainScreen.this);
+                customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                customDialog.show();
             }
         });
 
@@ -110,21 +125,21 @@ public class UserMainScreen extends AppCompatActivity {
                     amt = Integer.parseInt(dataAmt.getText().toString());
 
 
-                if (TextUtils.isEmpty(desc) && TextUtils.isEmpty(String.valueOf(amt))) {
-                    Toast.makeText(UserMainScreen.this, "Enter data properly!", Toast.LENGTH_SHORT).show();
-                } else {
-                    addDataLayout.setVisibility(View.INVISIBLE);
-                    addDataCard.setVisibility(View.VISIBLE);
+                    if (TextUtils.isEmpty(desc) && TextUtils.isEmpty(String.valueOf(amt))) {
+                        Toast.makeText(UserMainScreen.this, "Enter data properly!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        addDataLayout.setVisibility(View.INVISIBLE);
+                        addDataCard.setVisibility(View.VISIBLE);
 
-                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
-                    LocalDateTime now = LocalDateTime.now();
-                    date = dtf.format(now);
+                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+                        LocalDateTime now = LocalDateTime.now();
+                        date = dtf.format(now);
 
-                    addDataToFireStore(desc, date, amt);
+                        addDataToFireStore(desc, date, amt);
 
-                    dataDesc.setText("");
-                    dataAmt.setText("");
-                }
+                        dataDesc.setText("");
+                        dataAmt.setText("");
+                    }
 
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
@@ -134,31 +149,36 @@ public class UserMainScreen extends AppCompatActivity {
         });
 
         recyclerView = findViewById(R.id.dataListRecyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        model = new ArrayList<ModelClass>();
-        dataAdapter = new DataAdapter(UserMainScreen.this, model);
-
         eventChangeListener();
-        recyclerView.setAdapter(dataAdapter);
     }
 
     private void eventChangeListener() {
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        list = new ArrayList<ModelClass>();
         db = FirebaseFirestore.getInstance();
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
-        db.collection("User").document(signInAccount.getEmail()).collection("Expenses").orderBy("dAndT", Query.Direction.DESCENDING).get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection("User").document(signInAccount.getEmail()).collection("Expenses").orderBy("dAndT", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                        for (DocumentSnapshot documentSnapshot : list) {
-                            ModelClass modelClassObj = documentSnapshot.toObject(ModelClass.class);
-                            model.add(modelClassObj);
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        // first its good practice to check wheathere there is any data in firestore or not
+                        if (value != null) { // value is present in db
+
+                            list.clear();//clearing list before getting the data if v will not aff this then when u add the data from firestore it will show u duplicate times
+                            for (DocumentSnapshot snapshot : value.getDocuments()) {
+                                ModelClass modelClassObj = snapshot.toObject(ModelClass.class);
+                                list.add(modelClassObj);
+                            }
+                            dataAdapter.notifyDataSetChanged();
                         }
-                        dataAdapter.notifyDataSetChanged();
                     }
                 });
+        dataAdapter = new DataAdapter(UserMainScreen.this, list);
+        dataAdapter.notifyDataSetChanged();
+
+        recyclerView.setAdapter(dataAdapter);
     }
 
     private void addDataToFireStore(String desc, String date, int amt) {
@@ -171,6 +191,7 @@ public class UserMainScreen extends AppCompatActivity {
             @Override
             public void onSuccess(Void unused) {
                 Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -178,17 +199,11 @@ public class UserMainScreen extends AppCompatActivity {
                 Toast.makeText(UserMainScreen.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-        /*dbData.add(model).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(UserMainScreen.this, "Failed to add data", Toast.LENGTH_SHORT).show();
-            }
-        });*/
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 }

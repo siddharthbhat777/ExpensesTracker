@@ -78,6 +78,7 @@
             android:backgroundTint="@color/black"
             android:ems="7"
             android:hint="Amount"
+            android:inputType="number"
             android:textColor="@color/black"
             android:textColorHint="#8C8484"
             android:textSize="20sp"

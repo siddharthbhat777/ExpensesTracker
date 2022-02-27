@@ -9,16 +9,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;//wht is this notify ?wait plzz
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder> {
 
     Context context;
-    ArrayList<ModelClass> model;
+    ArrayList<ModelClass> modelList; // it will be better if u give a name related to list to this variable for better understanding ok
 
-    public DataAdapter(Context context, ArrayList<ModelClass> model) {
+    public DataAdapter(Context context, ArrayList<ModelClass> modelList) {
         this.context = context;
-        this.model = model;
+        this.modelList = modelList;
+        //as we had notify our arraylist on deleteing the data we have to do save while adding data also
+        this.notifyDataSetChanged();//add this to notify ur adapter about the changes in list
     }
 
     @NonNull
@@ -33,22 +41,44 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
     @Override
     public void onBindViewHolder(@NonNull DataAdapter.DataViewHolder holder, int position) {
 
-        ModelClass modelClass = model.get(position);
+        ModelClass modelClass = modelList.get(position);
 
         holder.descTV.setText(modelClass.getDesc());
         holder.dateTV.setText(modelClass.getdAndT());
         holder.priceTV.setText(String.valueOf(modelClass.getAmt()));
 
+        //delete listner
+        holder.deleteCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //getting reference to the firestore
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(context);
+                db.collection("User").document(signInAccount.getEmail()).collection("Expenses")
+                        .document(modelClass.getDesc()) //using the modeCLass.getDesc to get the description of the item because the id of the doument is same as the desc of the item
+               .delete() // using pre build delete() method to delete the item with this desc.
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) { // using this listener to ok
+//                       notifyItemRemoved(position); // notify this list that a item has been removed
+                    }
+                });
+
+            }
+        });
+
     }
 
     @Override
     public int getItemCount() {
-        return model.size();
+        return modelList.size();
     }
 
     public static class DataViewHolder extends RecyclerView.ViewHolder {
 
         TextView descTV, dateTV, priceTV;
+        //init ur cardview here
+        MaterialCardView deleteCV;
 
         public DataViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -56,6 +86,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
             descTV = itemView.findViewById(R.id.single_data);
             dateTV = itemView.findViewById(R.id.single_date);
             priceTV = itemView.findViewById(R.id.single_amount);
+            deleteCV = itemView.findViewById(R.id.deleteDataCardView);
         }
     }
 }
