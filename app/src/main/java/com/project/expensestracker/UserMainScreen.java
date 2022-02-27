@@ -105,14 +105,7 @@ public class UserMainScreen extends AppCompatActivity {
 
         ModelClass model = new ModelClass(desc, amt);
 
-        FirebaseFirestore.getInstance().collection("User").document(signInAccount.getEmail()).collection("Description").document(desc).set(model).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        FirebaseFirestore.getInstance().collection("User").document(signInAccount.getEmail()).collection("Amount").document(amt).set(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+        FirebaseFirestore.getInstance().collection("User").document(signInAccount.getEmail()).collection("Expenses").document(desc).set(model).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
