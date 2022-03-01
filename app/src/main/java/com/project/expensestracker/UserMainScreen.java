@@ -203,7 +203,7 @@ public class UserMainScreen extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        finishAffinity();
         finish();
-        super.onBackPressed();
     }
 }
