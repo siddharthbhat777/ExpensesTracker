@@ -25,8 +25,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
     public DataAdapter(Context context, ArrayList<ModelClass> modelList) {
         this.context = context;
         this.modelList = modelList;
-        //as we had notify our arraylist on deleteing the data we have to do save while adding data also
-        this.notifyDataSetChanged();//add this to notify ur adapter about the changes in list
+        this.notifyDataSetChanged();
     }
 
     @NonNull
@@ -47,20 +46,17 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
         holder.dateTV.setText(modelClass.getdAndT());
         holder.priceTV.setText(String.valueOf(modelClass.getAmt()));
 
-        //delete listner
         holder.deleteCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //getting reference to the firestore
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(context);
                 db.collection("User").document(signInAccount.getEmail()).collection("Expenses")
-                        .document(modelClass.getDesc()) //using the modeCLass.getDesc to get the description of the item because the id of the doument is same as the desc of the item
-               .delete() // using pre build delete() method to delete the item with this desc.
+                        .document(modelClass.getDesc())
+               .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(Void unused) { // using this listener to ok
-//                       notifyItemRemoved(position); // notify this list that a item has been removed
+                    public void onSuccess(Void unused) {
                     }
                 });
 
@@ -77,7 +73,6 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
     public static class DataViewHolder extends RecyclerView.ViewHolder {
 
         TextView descTV, dateTV, priceTV;
-        //init ur cardview here
         MaterialCardView deleteCV;
 
         public DataViewHolder(@NonNull View itemView) {
