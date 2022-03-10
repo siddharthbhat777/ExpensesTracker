@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FirebaseUser user = mAuth.getCurrentUser();
-        if(user!=null){
-            Intent intent = new Intent(getApplicationContext(),UserMainScreen.class);
+        if (user != null) {
+            Intent intent = new Intent(getApplicationContext(), UserMainScreen.class);
             startActivity(intent);
         }
     }
@@ -84,9 +84,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Intent intent = new Intent(getApplicationContext(),UserMainScreen.class);
+                            Intent intent = new Intent(getApplicationContext(), UserMainScreen.class);
                             startActivity(intent);
 
 

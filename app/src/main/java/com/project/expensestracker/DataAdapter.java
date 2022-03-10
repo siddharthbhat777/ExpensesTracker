@@ -8,25 +8,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;//wht is this notify ?wait plzz
+import java.util.ArrayList;
 import java.util.Date;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder> {
 
     Context context;
-    ArrayList<ModelClass> modelList; // it will be better if u give a name related to list to this variable for better understanding ok
+    ArrayList<ModelClass> modelList;
 
     public DataAdapter(Context context, ArrayList<ModelClass> modelList) {
         this.context = context;
@@ -50,11 +45,11 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
 
         holder.descTV.setText(modelClass.getDesc());
 
-        long yourmilliseconds =modelClass.getdAndT();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-        Date resultdate = new Date(yourmilliseconds);
+        long timeInMilliseconds =modelClass.getdAndT();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        Date resultDate = new Date(timeInMilliseconds);
 
-        holder.dateTV.setText(sdf.format(resultdate));
+        holder.dateTV.setText(sdf.format(resultDate));
 
         holder.priceTV.setText(String.valueOf(modelClass.getAmt()));
 

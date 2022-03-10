@@ -4,7 +4,14 @@ public class ModelClass {
     private String desc;
     private long amt, dAndT;
 
-    ModelClass(){}
+    ModelClass() {
+    }
+
+    public ModelClass(String desc, long amt, long dAndT) {
+        this.desc = desc;
+        this.amt = amt;
+        this.dAndT = dAndT;
+    }
 
     public String getDesc() {
         return desc;
@@ -30,9 +37,4 @@ public class ModelClass {
         this.dAndT = dAndT;
     }
 
-    public ModelClass(String desc, long amt, long dAndT) {
-        this.desc = desc;
-        this.amt = amt;
-        this.dAndT = dAndT;
-    }
 }

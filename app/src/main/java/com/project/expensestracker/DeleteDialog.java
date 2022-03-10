@@ -2,7 +2,6 @@ package com.project.expensestracker;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -10,11 +9,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class DeleteDialog extends Dialog implements View.OnClickListener {
@@ -24,7 +20,7 @@ public class DeleteDialog extends Dialog implements View.OnClickListener {
     GoogleSignInAccount account;
     private String path;
 
-    public DeleteDialog(Activity activity,String path) {
+    public DeleteDialog(Activity activity, String path) {
         super(activity);
         this.activity = activity;
         this.path = path;

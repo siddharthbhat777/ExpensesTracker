@@ -34,12 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class UserMainScreen extends AppCompatActivity {
 
@@ -154,10 +149,9 @@ public class UserMainScreen extends AppCompatActivity {
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        // first its good practice to check wheathere there is any data in firestore or not
-                        if (value != null) { // value is present in db
+                        if (value != null) {
 
-                            list.clear();//clearing list before getting the data if v will not aff this then when u add the data from firestore it will show u duplicate times
+                            list.clear();
                             for (DocumentSnapshot snapshot : value.getDocuments()) {
                                 ModelClass modelClassObj = snapshot.toObject(ModelClass.class);
                                 list.add(modelClassObj);
