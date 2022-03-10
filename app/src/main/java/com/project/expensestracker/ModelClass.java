@@ -1,16 +1,10 @@
 package com.project.expensestracker;
 
 public class ModelClass {
-    private String desc, dAndT;
-    private long amt;
+    private String desc;
+    private long amt, dAndT;
 
     ModelClass(){}
-
-    public ModelClass(String desc, String dAndT, long amt) {
-        this.desc = desc;
-        this.dAndT = dAndT;
-        this.amt = amt;
-    }
 
     public String getDesc() {
         return desc;
@@ -20,19 +14,25 @@ public class ModelClass {
         this.desc = desc;
     }
 
-    public String getdAndT() {
-        return dAndT;
-    }
-
-    public void setdAndT(String dAndT) {
-        this.dAndT = dAndT;
-    }
-
     public long getAmt() {
         return amt;
     }
 
     public void setAmt(long amt) {
         this.amt = amt;
+    }
+
+    public long getdAndT() {
+        return dAndT;
+    }
+
+    public void setdAndT(long dAndT) {
+        this.dAndT = dAndT;
+    }
+
+    public ModelClass(String desc, long amt, long dAndT) {
+        this.desc = desc;
+        this.amt = amt;
+        this.dAndT = dAndT;
     }
 }

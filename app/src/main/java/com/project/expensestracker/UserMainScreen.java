@@ -35,9 +35,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class UserMainScreen extends AppCompatActivity {
 
@@ -50,7 +52,8 @@ public class UserMainScreen extends AppCompatActivity {
     Button addDataButton;
     LinearLayout addDataLayout;
 
-    private String desc, date;
+    private String desc;
+    long date;
     private int amt;
 
     private FirebaseFirestore db;
@@ -121,11 +124,9 @@ public class UserMainScreen extends AppCompatActivity {
                         addDataLayout.setVisibility(View.INVISIBLE);
                         addDataCard.setVisibility(View.VISIBLE);
 
-                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
-                        LocalDateTime now = LocalDateTime.now();
-                        date = dtf.format(now);
+                        date = System.currentTimeMillis();
 
-                        addDataToFireStore(desc, date, amt);
+                        addDataToFireStore(desc, amt, date);
 
                         dataDesc.setText("");
                         dataAmt.setText("");
@@ -171,16 +172,15 @@ public class UserMainScreen extends AppCompatActivity {
         recyclerView.setAdapter(dataAdapter);
     }
 
-    private void addDataToFireStore(String desc, String date, int amt) {
+    private void addDataToFireStore(String desc, long amt, long date) {
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-        ModelClass model = new ModelClass(desc, date, amt);
+        ModelClass model = new ModelClass(desc, amt, date);
 
         db.collection("User").document(signInAccount.getEmail()).collection("Expenses").document(desc).set(model).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 Toast.makeText(UserMainScreen.this, "Your data has been added", Toast.LENGTH_SHORT).show();
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

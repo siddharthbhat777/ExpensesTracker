@@ -1,10 +1,14 @@
 package com.project.expensestracker;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,7 +19,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;//wht is this notify ?wait plzz
+import java.util.Date;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder> {
 
@@ -43,23 +49,21 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
         ModelClass modelClass = modelList.get(position);
 
         holder.descTV.setText(modelClass.getDesc());
-        holder.dateTV.setText(modelClass.getdAndT());
+
+        long yourmilliseconds =modelClass.getdAndT();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+        Date resultdate = new Date(yourmilliseconds);
+
+        holder.dateTV.setText(sdf.format(resultdate));
+
         holder.priceTV.setText(String.valueOf(modelClass.getAmt()));
 
         holder.deleteCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(context);
-                db.collection("User").document(signInAccount.getEmail()).collection("Expenses")
-                        .document(modelClass.getDesc())
-               .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                    }
-                });
-
+                DeleteDialog customDialog = new DeleteDialog((Activity) context,modelClass.getDesc());
+                customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                customDialog.show();
             }
         });
 
